@@ -17,18 +17,11 @@ func set_insert(set map[int]struct{}, elem int) {
 	set[elem] = struct{}{}
 }
 
-// func (dag dag) insertNode(node node) {
-// 	index := len(dag.nodes)
-// 	node.index = index
-
-// 	dag.nodes = append(dag.nodes, node)
-// }
-
 func new_dag(starting_node node) dag {
 	starting_node.index = 0
 	return dag{
-		roots:  make(map[int]struct{}),
-		leaves: make(map[int]struct{}),
+		roots:  map[int]struct{}{0: {}},
+		leaves: map[int]struct{}{0: {}},
 		nodes:  []node{starting_node},
 	}
 }
