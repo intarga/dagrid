@@ -3,8 +3,8 @@ package dagrid
 type node struct {
 	contents string
 	index    int
-	children []int
-	parents  []int
+	children map[int]struct{}
+	parents  map[int]struct{}
 }
 
 type edge struct {
@@ -14,10 +14,14 @@ type edge struct {
 }
 
 type dag struct {
-	roots  []int
-	leaves []int
+	roots  map[int]struct{}
+	leaves map[int]struct{}
 	nodes  []node
 	edges  []edge
+}
+
+func set_insert(set map[int]struct{}, elem int) {
+	set[elem] = struct{}{}
 }
 
 // func (dag dag) insertNode(node node) {
@@ -30,8 +34,8 @@ type dag struct {
 func new_dag(starting_node node) dag {
 	starting_node.index = 0
 	return dag{
-		roots:  []int{0},
-		leaves: []int{0},
+		roots:  make(map[int]struct{}),
+		leaves: make(map[int]struct{}),
 		nodes:  []node{starting_node},
 		edges:  make([]edge, 10),
 	}
@@ -41,6 +45,6 @@ func (dag dag) insert_child(child node, parent node) {
 	child.index = len(dag.nodes)
 
 	dag.nodes = append(dag.nodes, child)
-	dag.leaves = append(dag.leaves, child.index)
+	set_insert(dag.leaves, child.index)
 	//TODO
 }
