@@ -7,17 +7,10 @@ type node struct {
 	parents  map[int]struct{}
 }
 
-type edge struct {
-	index int
-	start int
-	end   int
-}
-
 type dag struct {
 	roots  map[int]struct{}
 	leaves map[int]struct{}
 	nodes  []node
-	edges  []edge
 }
 
 func set_insert(set map[int]struct{}, elem int) {
@@ -37,7 +30,6 @@ func new_dag(starting_node node) dag {
 		roots:  make(map[int]struct{}),
 		leaves: make(map[int]struct{}),
 		nodes:  []node{starting_node},
-		edges:  make([]edge, 10),
 	}
 }
 
