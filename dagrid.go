@@ -46,5 +46,5 @@ func (dag dag) insert_child(child node, parent node) {
 
 	dag.nodes = append(dag.nodes, child)
 	set_insert(dag.leaves, child.index)
-	//TODO
+	delete(dag.leaves, parent.index)
 }
