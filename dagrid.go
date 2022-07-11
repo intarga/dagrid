@@ -68,14 +68,17 @@ func (dag dag) remove_edge(parent_index int, child_index int) {
 	delete(dag.nodes[child_index].parents, parent_index)
 }
 
-func (dag dag) count_edges_iter(current_index int, nodes_visited *map[int]struct{}) int {
+func (dag dag) count_edges_iter(current_index int, nodes_visited map[int]struct{}) int {
 	edge_count := 0
 
 	for child_index := range dag.nodes[current_index].children {
-		edge_count += 1 + dag.count_edges_iter(child_index, nodes_visited)
+		edge_count += 1
+		if _, ok := nodes_visited[child_index]; !ok {
+			edge_count += dag.count_edges_iter(child_index, nodes_visited)
+		}
 	}
 
-	set_insert(*nodes_visited, current_index)
+	set_insert(nodes_visited, current_index)
 
 	return edge_count
 }
@@ -85,7 +88,7 @@ func (dag dag) count_edges() int {
 	nodes_visited := make(map[int]struct{})
 
 	for root := range dag.roots {
-		edge_count += dag.count_edges_iter(root, &nodes_visited)
+		edge_count += dag.count_edges_iter(root, nodes_visited)
 	}
 
 	return edge_count
