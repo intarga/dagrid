@@ -34,7 +34,7 @@ func new_dag() dag {
 	}
 }
 
-func (dag dag) insert_free_node(contents string) int {
+func (dag *dag) insert_free_node(contents string) int {
 	node := new_node(contents, len(dag.nodes))
 
 	dag.nodes = append(dag.nodes, node)
@@ -45,7 +45,7 @@ func (dag dag) insert_free_node(contents string) int {
 	return node.index
 }
 
-func (dag dag) insert_child(parent_index int, child_contents string) int {
+func (dag *dag) insert_child(parent_index int, child_contents string) int {
 	child := new_node(child_contents, len(dag.nodes))
 
 	dag.nodes = append(dag.nodes, child)
@@ -58,17 +58,17 @@ func (dag dag) insert_child(parent_index int, child_contents string) int {
 	return child.index
 }
 
-func (dag dag) add_edge(parent_index int, child_index int) {
+func (dag *dag) add_edge(parent_index int, child_index int) {
 	set_insert(dag.nodes[parent_index].children, child_index)
 	set_insert(dag.nodes[child_index].parents, parent_index)
 }
 
-func (dag dag) remove_edge(parent_index int, child_index int) {
+func (dag *dag) remove_edge(parent_index int, child_index int) {
 	delete(dag.nodes[parent_index].children, child_index)
 	delete(dag.nodes[child_index].parents, parent_index)
 }
 
-func (dag dag) count_edges_iter(current_index int, nodes_visited map[int]struct{}) int {
+func (dag *dag) count_edges_iter(current_index int, nodes_visited map[int]struct{}) int {
 	edge_count := 0
 
 	for child_index := range dag.nodes[current_index].children {
@@ -83,7 +83,7 @@ func (dag dag) count_edges_iter(current_index int, nodes_visited map[int]struct{
 	return edge_count
 }
 
-func (dag dag) count_edges() int {
+func (dag *dag) count_edges() int {
 	edge_count := 0
 	nodes_visited := make(map[int]struct{})
 
@@ -94,7 +94,7 @@ func (dag dag) count_edges() int {
 	return edge_count
 }
 
-func (dag dag) transitive_reduce_iter(current_index int, ancestors map[int]struct{}) {
+func (dag *dag) transitive_reduce_iter(current_index int, ancestors map[int]struct{}) {
 	for child_index := range dag.nodes[current_index].children {
 		for coparent_index := range dag.nodes[child_index].parents {
 			if _, ok := ancestors[coparent_index]; ok {
@@ -109,7 +109,7 @@ func (dag dag) transitive_reduce_iter(current_index int, ancestors map[int]struc
 	}
 }
 
-func (dag dag) transitive_reduce() {
+func (dag *dag) transitive_reduce() {
 	for root := range dag.roots {
 		dag.transitive_reduce_iter(root, make(map[int]struct{}))
 	}
