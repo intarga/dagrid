@@ -34,16 +34,18 @@ func new_dag() dag {
 	}
 }
 
-func (dag dag) insert_free_node(contents string) {
+func (dag dag) insert_free_node(contents string) int {
 	node := new_node(contents, len(dag.nodes))
 
 	dag.nodes = append(dag.nodes, node)
 
 	set_insert(dag.roots, node.index)
 	set_insert(dag.leaves, node.index)
+
+	return node.index
 }
 
-func (dag dag) insert_child(child_contents string, parent_index int) {
+func (dag dag) insert_child(child_contents string, parent_index int) int {
 	child := new_node(child_contents, len(dag.nodes))
 
 	dag.nodes = append(dag.nodes, child)
@@ -52,6 +54,8 @@ func (dag dag) insert_child(child_contents string, parent_index int) {
 
 	set_insert(child.parents, parent_index)
 	set_insert(dag.nodes[parent_index].children, child.index)
+
+	return child.index
 }
 
 func (dag dag) add_edge(parent_index int, child_index int) {
