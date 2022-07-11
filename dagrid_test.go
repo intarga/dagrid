@@ -27,6 +27,6 @@ func TestTransitiveReduce(t *testing.T) {
 	dag.transitive_reduce()
 
 	if dag.count_edges() != 5 {
-		t.Errorf("dag has %v edges, expected 8 edges", dag.count_edges())
+		t.Errorf("dag has %v edges, expected 5 edges", dag.count_edges())
 	}
 }
