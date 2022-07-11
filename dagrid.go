@@ -107,6 +107,7 @@ func (dag *dag) transitive_reduce_iter(current_index int, ancestors map[int]stru
 	for child_index := range dag.nodes[current_index].children {
 		dag.transitive_reduce_iter(child_index, ancestors)
 	}
+	delete(ancestors, current_index)
 }
 
 func (dag *dag) transitive_reduce() {
