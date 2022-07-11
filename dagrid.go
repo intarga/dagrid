@@ -54,6 +54,16 @@ func (dag dag) insert_child(child_contents string, parent_index int) {
 	set_insert(dag.nodes[parent_index].children, child.index)
 }
 
+func (dag dag) add_edge(parent_index int, child_index int) {
+	set_insert(dag.nodes[parent_index].children, child_index)
+	set_insert(dag.nodes[child_index].children, parent_index)
+}
+
+func (dag dag) remove_edge(parent_index int, child_index int) {
+	delete(dag.nodes[parent_index].children, child_index)
+	delete(dag.nodes[child_index].children, parent_index)
+}
+
 func (dag dag) count_edges_iter(current_index int, nodes_visited *map[int]struct{}) int {
 	edge_count := 0
 
@@ -81,8 +91,7 @@ func (dag dag) transitive_reduce_iter(current_index int, ancestors map[int]struc
 	for child_index := range dag.nodes[current_index].children {
 		for coparent_index := range dag.nodes[child_index].parents {
 			if _, ok := ancestors[coparent_index]; ok {
-				delete(dag.nodes[coparent_index].children, child_index)
-				delete(dag.nodes[child_index].children, coparent_index)
+				dag.remove_edge(coparent_index, child_index)
 			}
 		}
 	}
