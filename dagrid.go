@@ -60,12 +60,12 @@ func (dag dag) insert_child(parent_index int, child_contents string) int {
 
 func (dag dag) add_edge(parent_index int, child_index int) {
 	set_insert(dag.nodes[parent_index].children, child_index)
-	set_insert(dag.nodes[child_index].children, parent_index)
+	set_insert(dag.nodes[child_index].parents, parent_index)
 }
 
 func (dag dag) remove_edge(parent_index int, child_index int) {
 	delete(dag.nodes[parent_index].children, child_index)
-	delete(dag.nodes[child_index].children, parent_index)
+	delete(dag.nodes[child_index].parents, parent_index)
 }
 
 func (dag dag) count_edges_iter(current_index int, nodes_visited *map[int]struct{}) int {
