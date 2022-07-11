@@ -45,7 +45,7 @@ func (dag dag) insert_free_node(contents string) int {
 	return node.index
 }
 
-func (dag dag) insert_child(child_contents string, parent_index int) int {
+func (dag dag) insert_child(parent_index int, child_contents string) int {
 	child := new_node(child_contents, len(dag.nodes))
 
 	dag.nodes = append(dag.nodes, child)
