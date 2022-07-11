@@ -26,11 +26,11 @@ func new_node(contents string, index int) node {
 	}
 }
 
-func new_dag(starting_node_contents string) dag {
+func new_dag() dag {
 	return dag{
-		roots:  map[int]struct{}{0: {}},
-		leaves: map[int]struct{}{0: {}},
-		nodes:  []node{new_node(starting_node_contents, 0)},
+		roots:  make(map[int]struct{}),
+		leaves: make(map[int]struct{}),
+		nodes:  make([]node, 0, 10),
 	}
 }
 
