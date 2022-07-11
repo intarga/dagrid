@@ -1,9 +1,6 @@
 package dagrid
 
-import (
-	// "dagrid"
-	"testing"
-)
+import "testing"
 
 func TestTransitiveReduce(t *testing.T) {
 	dag := new_dag()
