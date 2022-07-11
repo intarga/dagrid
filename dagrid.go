@@ -53,3 +53,25 @@ func (dag dag) insert_child(child_contents string, parent_index int) {
 	set_insert(child.parents, parent_index)
 	set_insert(dag.nodes[parent_index].children, child.index)
 }
+
+func (dag dag) transitive_reduce_iter(current_index int, ancestors map[int]struct{}) {
+	for child_index := range dag.nodes[current_index].children {
+		for coparent_index := range dag.nodes[child_index].parents {
+			if _, ok := ancestors[coparent_index]; ok {
+				delete(dag.nodes[coparent_index].children, child_index)
+				delete(dag.nodes[child_index].children, coparent_index)
+			}
+		}
+	}
+
+	set_insert(ancestors, current_index)
+	for child_index := range dag.nodes[current_index].children {
+		dag.transitive_reduce_iter(child_index, ancestors)
+	}
+}
+
+func (dag dag) transitive_reduce() {
+	for root := range dag.roots {
+		dag.transitive_reduce_iter(root, make(map[int]struct{}))
+	}
+}
