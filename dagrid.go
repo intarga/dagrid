@@ -8,9 +8,10 @@ type node struct {
 }
 
 type Dag struct {
-	Roots  map[int]struct{}
-	Leaves map[int]struct{}
-	Nodes  []node
+	Roots       map[int]struct{}
+	Leaves      map[int]struct{}
+	Nodes       []node
+	IndexLookup map[string]int
 }
 
 func set_insert(set map[int]struct{}, elem int) {
@@ -28,9 +29,10 @@ func new_node(contents string, index int) node {
 
 func New_dag() Dag {
 	return Dag{
-		Roots:  make(map[int]struct{}),
-		Leaves: make(map[int]struct{}),
-		Nodes:  make([]node, 0, 10),
+		Roots:       make(map[int]struct{}),
+		Leaves:      make(map[int]struct{}),
+		Nodes:       make([]node, 0, 10),
+		IndexLookup: make(map[string]int),
 	}
 }
 
@@ -41,6 +43,8 @@ func (dag *Dag) Insert_free_node(contents string) int {
 
 	set_insert(dag.Roots, node.Index)
 	set_insert(dag.Leaves, node.Index)
+
+	dag.IndexLookup[node.Contents] = node.Index
 
 	return node.Index
 }
@@ -54,6 +58,8 @@ func (dag *Dag) Insert_child(parent_index int, child_contents string) int {
 
 	set_insert(child.Parents, parent_index)
 	set_insert(dag.Nodes[parent_index].Children, child.Index)
+
+	dag.IndexLookup[child.Contents] = child.Index
 
 	return child.Index
 }
