@@ -1,16 +1,16 @@
 package dagrid
 
 type node struct {
-	contents string
-	index    int
-	children map[int]struct{}
-	parents  map[int]struct{}
+	Contents string
+	Index    int
+	Children map[int]struct{}
+	Parents  map[int]struct{}
 }
 
 type Dag struct {
-	roots  map[int]struct{}
-	leaves map[int]struct{}
-	nodes  []node
+	Roots  map[int]struct{}
+	Leaves map[int]struct{}
+	Nodes  []node
 }
 
 func set_insert(set map[int]struct{}, elem int) {
@@ -19,60 +19,60 @@ func set_insert(set map[int]struct{}, elem int) {
 
 func new_node(contents string, index int) node {
 	return node{
-		contents: contents,
-		index:    index,
-		children: make(map[int]struct{}),
-		parents:  make(map[int]struct{}),
+		Contents: contents,
+		Index:    index,
+		Children: make(map[int]struct{}),
+		Parents:  make(map[int]struct{}),
 	}
 }
 
 func New_dag() Dag {
 	return Dag{
-		roots:  make(map[int]struct{}),
-		leaves: make(map[int]struct{}),
-		nodes:  make([]node, 0, 10),
+		Roots:  make(map[int]struct{}),
+		Leaves: make(map[int]struct{}),
+		Nodes:  make([]node, 0, 10),
 	}
 }
 
 func (dag *Dag) Insert_free_node(contents string) int {
-	node := new_node(contents, len(dag.nodes))
+	node := new_node(contents, len(dag.Nodes))
 
-	dag.nodes = append(dag.nodes, node)
+	dag.Nodes = append(dag.Nodes, node)
 
-	set_insert(dag.roots, node.index)
-	set_insert(dag.leaves, node.index)
+	set_insert(dag.Roots, node.Index)
+	set_insert(dag.Leaves, node.Index)
 
-	return node.index
+	return node.Index
 }
 
 func (dag *Dag) Insert_child(parent_index int, child_contents string) int {
-	child := new_node(child_contents, len(dag.nodes))
+	child := new_node(child_contents, len(dag.Nodes))
 
-	dag.nodes = append(dag.nodes, child)
-	set_insert(dag.leaves, child.index)
-	delete(dag.leaves, parent_index)
+	dag.Nodes = append(dag.Nodes, child)
+	set_insert(dag.Leaves, child.Index)
+	delete(dag.Leaves, parent_index)
 
-	set_insert(child.parents, parent_index)
-	set_insert(dag.nodes[parent_index].children, child.index)
+	set_insert(child.Parents, parent_index)
+	set_insert(dag.Nodes[parent_index].Children, child.Index)
 
-	return child.index
+	return child.Index
 }
 
 // TODO: think about how these affect roots and leaves
 func (dag *Dag) Add_edge(parent_index int, child_index int) {
-	set_insert(dag.nodes[parent_index].children, child_index)
-	set_insert(dag.nodes[child_index].parents, parent_index)
+	set_insert(dag.Nodes[parent_index].Children, child_index)
+	set_insert(dag.Nodes[child_index].Parents, parent_index)
 }
 
 func (dag *Dag) Remove_edge(parent_index int, child_index int) {
-	delete(dag.nodes[parent_index].children, child_index)
-	delete(dag.nodes[child_index].parents, parent_index)
+	delete(dag.Nodes[parent_index].Children, child_index)
+	delete(dag.Nodes[child_index].Parents, parent_index)
 }
 
 func (dag *Dag) count_edges_iter(current_index int, nodes_visited map[int]struct{}) int {
 	edge_count := 0
 
-	for child_index := range dag.nodes[current_index].children {
+	for child_index := range dag.Nodes[current_index].Children {
 		edge_count += 1
 		if _, ok := nodes_visited[child_index]; !ok {
 			edge_count += dag.count_edges_iter(child_index, nodes_visited)
@@ -88,7 +88,7 @@ func (dag *Dag) Count_edges() int {
 	edge_count := 0
 	nodes_visited := make(map[int]struct{})
 
-	for root := range dag.roots {
+	for root := range dag.Roots {
 		edge_count += dag.count_edges_iter(root, nodes_visited)
 	}
 
@@ -96,8 +96,8 @@ func (dag *Dag) Count_edges() int {
 }
 
 func (dag *Dag) transitive_reduce_iter(current_index int, ancestors map[int]struct{}) {
-	for child_index := range dag.nodes[current_index].children {
-		for coparent_index := range dag.nodes[child_index].parents {
+	for child_index := range dag.Nodes[current_index].Children {
+		for coparent_index := range dag.Nodes[child_index].Parents {
 			if _, ok := ancestors[coparent_index]; ok {
 				dag.Remove_edge(coparent_index, child_index)
 			}
@@ -105,14 +105,14 @@ func (dag *Dag) transitive_reduce_iter(current_index int, ancestors map[int]stru
 	}
 
 	set_insert(ancestors, current_index)
-	for child_index := range dag.nodes[current_index].children {
+	for child_index := range dag.Nodes[current_index].Children {
 		dag.transitive_reduce_iter(child_index, ancestors)
 	}
 	delete(ancestors, current_index)
 }
 
 func (dag *Dag) Transitive_reduce() {
-	for root := range dag.roots {
+	for root := range dag.Roots {
 		dag.transitive_reduce_iter(root, make(map[int]struct{}))
 	}
 }
