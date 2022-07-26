@@ -58,15 +58,24 @@ func (dag *Dag) Insert_child(parent_index int, child_contents string) int {
 	return child.Index
 }
 
-// TODO: think about how these affect roots and leaves
 func (dag *Dag) Add_edge(parent_index int, child_index int) {
 	set_insert(dag.Nodes[parent_index].Children, child_index)
 	set_insert(dag.Nodes[child_index].Parents, parent_index)
+
+	delete(dag.Leaves, parent_index)
+	delete(dag.Roots, child_index)
 }
 
 func (dag *Dag) Remove_edge(parent_index int, child_index int) {
 	delete(dag.Nodes[parent_index].Children, child_index)
 	delete(dag.Nodes[child_index].Parents, parent_index)
+
+	if len(dag.Nodes[parent_index].Children) == 0 {
+		set_insert(dag.Leaves, parent_index)
+	}
+	if len(dag.Nodes[child_index].Parents) == 0 {
+		set_insert(dag.Roots, child_index)
+	}
 }
 
 func (dag *Dag) count_edges_iter(current_index int, nodes_visited map[int]struct{}) int {
