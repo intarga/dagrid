@@ -131,3 +131,34 @@ func (dag *Dag) Transitive_reduce() {
 		dag.transitive_reduce_iter(root, make(map[int]struct{}))
 	}
 }
+
+func (dag *Dag) cycle_check_iter(current_index int, ancestors map[int]struct{}) (ok bool) {
+	_, ok = ancestors[current_index]
+	if ok {
+		return false
+	}
+
+	set_insert(ancestors, current_index)
+
+	for child_index := range dag.Nodes[current_index].Children {
+		if !dag.cycle_check_iter(child_index, ancestors) {
+			return false
+		}
+	}
+
+	delete(ancestors, current_index)
+
+	return true
+}
+
+func (dag *Dag) Cycle_check() (ok bool) {
+	ancestors := make(map[int]struct{})
+
+	for root := range dag.Roots {
+		if !dag.cycle_check_iter(root, ancestors) {
+			return false
+		}
+	}
+
+	return true
+}
